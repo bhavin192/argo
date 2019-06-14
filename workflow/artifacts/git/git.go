@@ -40,8 +40,10 @@ func (g *GitArtifactDriver) Load(inputArtifact *wfv1.Artifact, path string) erro
 		}
 		return gitClone(path, inputArtifact, auth, g.SSHPrivateKey)
 	}
+	log.Infof("Load(): username: %s, password: %s", g.Username, g.Password)
 	if g.Username != "" || g.Password != "" {
 		auth := &http.BasicAuth{Username: g.Username, Password: g.Password}
+		log.Infof("Load(): BasicAuth object: %+v", auth)
 		return gitClone(path, inputArtifact, auth, "")
 	}
 	return gitClone(path, inputArtifact, nil, "")
@@ -86,6 +88,7 @@ func gitClone(path string, inputArtifact *wfv1.Artifact, auth transport.AuthMeth
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 		Auth:              auth,
 	}
+	log.Infof("gitClone(): cloneoptions object %+v", cloneOptions)
 	_, err := git.PlainClone(path, false, &cloneOptions)
 	if err != nil {
 		return errors.InternalWrapError(err)

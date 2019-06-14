@@ -558,14 +558,16 @@ func (we *WorkflowExecutor) InitDriver(art wfv1.Artifact) (artifact.ArtifactDriv
 			if err != nil {
 				return nil, err
 			}
-			gitDriver.Username = string(usernameBytes)
+			log.Infof("InitDriver(): value of usernameBytes: %s", usernameBytes)
+			gitDriver.Username = string(bytes.TrimSpace(usernameBytes))
 		}
 		if art.Git.PasswordSecret != nil {
 			passwordBytes, err := we.GetSecretFromVolMount(art.Git.PasswordSecret.Name, art.Git.PasswordSecret.Key)
 			if err != nil {
 				return nil, err
 			}
-			gitDriver.Password = string(passwordBytes)
+			log.Infof("InitDriver(): value of passwordBytes: %s", passwordBytes)
+			gitDriver.Password = string(bytes.TrimSpace(passwordBytes))
 		}
 		if art.Git.SSHPrivateKeySecret != nil {
 			sshPrivateKeyBytes, err := we.GetSecretFromVolMount(art.Git.SSHPrivateKeySecret.Name, art.Git.SSHPrivateKeySecret.Key)
@@ -574,7 +576,7 @@ func (we *WorkflowExecutor) InitDriver(art wfv1.Artifact) (artifact.ArtifactDriv
 			}
 			gitDriver.SSHPrivateKey = string(sshPrivateKeyBytes)
 		}
-
+		log.Infof("InitDriver(): gitDriver values: %+v", gitDriver)
 		return &gitDriver, nil
 	}
 	if art.Artifactory != nil {
